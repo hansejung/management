@@ -57,9 +57,30 @@ const styles = makeStyles((theme) => ({
 // function App(){
 class App extends Component {
 
-  state = {
-    customers: "",
-    completed: 1
+  // state = {
+  //   customers: "",
+  //   completed: 1
+  // }
+  constructor(props){
+    super(props);
+    var today = new Date(),
+    date = new Date();
+
+    this.state = {
+      customers: '',
+      completed: 0,
+      date: date
+    }
+  }
+
+  stateRefresh = () => {
+    this.setState({
+      customers: '',
+      completed: 0
+    });
+    this.callApi()
+      .then(res => this.setState({customers: res}))
+      .catch(err => console.log(err));
   }
 
   componentDidMount(){
@@ -89,6 +110,7 @@ class App extends Component {
   return (
     <div>
     <Paper className={classes.root}>
+    <h1>페이지오픈시간 : {this.state.date.toLocaleTimeString()} </h1> 
     <Table className={classes.table}>
       <TableHead>
         <TableRow>
@@ -120,7 +142,7 @@ class App extends Component {
 
       </TableBody>
       </Table>  
-      <CustomerAdd/> 
+      <CustomerAdd stateRefresh={this.stateRefresh}/> 
 
 
     {
