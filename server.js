@@ -27,7 +27,7 @@ const upload = multer({dest: './upload'});
 app.use('/image', express.static('./upload'));
 
 app.post('/api/customers', upload.single('image'), (req, res) => {
-  let sql = 'INSERT INTO CUSTOMER VALUES( null, ?, ?, ?, ?, ?)';
+  let sql = 'INSERT INTO CUSTOMER VALUES( null, ?, ?, ?, ?, ?, NOW(), 0)';
   let image = '/image/' + req.file.filename;
   let name = req.body.name;
   let birthday = req.body.birthday;
@@ -46,7 +46,7 @@ app.post('/api/customers', upload.single('image'), (req, res) => {
 app.get('/api/customers', (req,res) => {
 //  console.log(conf.database);
   connection.query(
-    "Select * from CUSTOMER",
+    "Select * from CUSTOMER WHERE isDeleted = 0",
     (err, rows, fields) => {
       if(err) console.log(err);
       // console.log('rows', rows);
@@ -57,6 +57,19 @@ app.get('/api/customers', (req,res) => {
   );
 });
 
+app.delete('/api/customers/:id', (req, res) => {
+  let sql = 'UPDATE CUSTOMER SET isDeleted = 1 WHERE id = ?';
+  let params = [req.params.id];
+  console.log(sql);
+  connection.query(sql, params, 
+    (err, rows, fields) => {
+      if(err) console.log(err);
+      res.send(rows);
+    }
+  )
+}
+
+)
 
   app.get('/api/customerstest', (req,res) => {
     res.send({message: 'Hello World Express!'});
